@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!--(1) This is the head section, where you set the title of the web page, link in any style sheets, 
+	and link to any javascript files/libraries you want to use in the web map-->
+	
+	<!-- (2) Notice how you can use the left angle bracket, exclamation and dashes to break the code and leave comments, 
+	but always make sure to close with two dashes and right angle bracket -->
+	<title>Ingersoll | Lab 7</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+	<!--(3) style sheets are usually packaged or hosted online, but you could also download this file to your repository 
+	and reference it. Here, we are pulling in a Leaflet CSS file from its host at unpkg.com. This provides styles for 
+	elements like the zoom button-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+    
+	<!--(4) finally in the head, scripts themselves tell the web browser how to handle user-initiated events and draw 
+	map features. Here we grab Leaflet again, this time the full array of (JavaScript) functions needed to draw and 
+	interact with items on a map-->
+	<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+
+	
+</head>
+<body>
+
+
+<!-- (5) a "div" is like a window; you're basically telling the browser to make a container here, size 600 by 400 -->
+<div id="mapid" style="width: 1000px; height: 800px;"></div>
+
+<script>
+//(6) when you are outside of the head and outside of functions, you can use just two slashes to leave single-line comments like this and you don't need to close
+
+//(7) just below here you see "var," declaring mymap as a variable, then setting your map parameters. You can redefine features of a variable in your code as needed.
+//    you could actually name this anything, as long as you call it up the same way each time throughout the code
+
+//(8) note that you might also see "const" used to identify variables in code, when you want a CONSTANT variable. Functionally, these will tend to work similarly in our work.
+//(9) here you define the longitude, latitude, and zoom level of the user map when they load the page, then follow with the tile layer you want (here it is mapbox)
+	
+	
+	var mymap = L.map('mapid').setView([40.819273, -96.702968], 16);
+	// Below was the original map layer. I took it out because when you zoomed in and out the user could see it load.
+	//L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	//	maxZoom: 19,
+	//	attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors '
+	//}).addTo(mymap);
+//(10) right above here, you see you're adding this tileset and setting the max zoom level of "mymap" 
+
+//(11) this is how you define individual features on the map - a marker, a cirlce, a polygon. You could also call up a variable and point it to a hosted GIS file to load it in.
+//(12) note that each popup has preloaded text here. You could also have a variable that points attributes in a dataset to populate a popup; we will do this in the future
+	L.marker([40.819273, -96.702968]).addTo(mymap)
+		.bindPopup("<b>Hello world!</b><br />I open automatically.").openPopup();
+
+	L.circle([40.8207, -96.7056], 150, {
+		color: 'red',
+		fillColor: '#D2B5B5',
+		fillOpacity: 0.2
+	}).addTo(mymap).bindPopup("This is Memorial Stadium!");
+	//(13) notice that you can set the color of the outline by using major color names, as well as the FILL color with hex codes. With larger datasets, you'd spe
+
+
+	L.polygon([
+		[40.81801389, -96.70111111],
+		[40.81803333, -96.70000000],
+		[40.81717222, -96.70000000],
+		[40.81715278, -96.70111111]
+	]).addTo(mymap).bindPopup("This polygon shows the location of the Nebraska Union");
+	//(14) three nodes - this is a triangle... you can add more nodes to the polygon by separating each with a comma, just make sure the last vertex terminates without a comma!!!
+
+
+	var popup = L.popup();
+	//(15) here you could set the attributes of the popup instead of setting each to specific text
+	
+	
+	//(16)Love Library is formatted here like a geojson file. This is more likely how you would use vector data in your visualizations. Notice that it's Var LoveLibrary...
+	//Somebody in class asked if that's common to throw it all in the file. Well, more often, you might want to add a file like lovelibrary.js and load it into your header,
+	//and inside that file, you would have your var lovelibrary and all of this there. That would save your page from getting overly long, like this one.
+	//That way you would just say L.geoJSON(LoveLibrary,{}).addTo(mymap); and it would work the same as having all these lines:
+		var LoveLibrary = {
+    "type": "Feature",
+    "properties": {
+        "name": "Love Library",
+        "amenity": "Library",
+        "popupContent": "This is a library!"
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [-96.702572, 40.817804]
+    }
+};
+
+	L.geoJSON(LoveLibrary,{}).addTo(mymap).bindPopup("This is Love Library");
+	
+	
+	L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_labels_under/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 19 }
+	)
+	.addTo(mymap);
+//(17)note there at the bottom that you "addTo(mymap)" - addTo is a Leaflet function that adds a layer, and in parenthesis you tell it to add it to the variable "mymap," which is where all of your code is written.
+
+</script>
+</body>
+</html>
