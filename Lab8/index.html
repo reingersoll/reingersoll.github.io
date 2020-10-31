@@ -13,6 +13,23 @@
 		<style type="text/css">
 			html, body { margin: 0; padding: 0; height: 100%; }
 			#map { min-height: 100%; }
+            .legend {
+              padding: 6px 8px;
+              line-height: 18px;
+              background: rgba(255,255,255,0.9);
+              box-shadow: 0 0 15px rgba(0,0,0,0.2);
+              border-radius: 5px;
+          }
+
+           <! Optional: adjust the values below to change the appearance of the legend color boxes >
+           .legend i {
+              width: 18px;
+              height: 18px;
+              float: left;
+              margin-right: 8px;
+              opacity: 0.7;
+          }
+
 		</style>
 
 
@@ -27,6 +44,13 @@
               center: [34.666, 104.9569],
               zoom: 5
           });
+		  var home = {
+			lat: 34.666,
+			lng: 104.9569,
+			zoom: 5
+				};  
+
+			
 
         L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
 			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -35,7 +59,7 @@
 			maxZoom: 20,
 			ext: 'png'
 		}).addTo(map);
-
+		//Terrain Base Map
 		var imagery = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.{ext}', {
 			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 			subdomains: 'abcd',
@@ -43,6 +67,7 @@
 			maxZoom: 18,
 			ext: 'png'
 		});
+		//Black and White Base Map
 		var canvas = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
 			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 			subdomains: 'abcd',
@@ -50,20 +75,114 @@
 			maxZoom: 20,
 			ext: 'png'
 		}).addTo(map);
-
-		var provinces = L.geoJson(provinces).addTo(map);
-		var coviddata = L.geoJson(coviddata).addTo(map);
 		
+			//This colors the provinces
+			//Each function help to create the choropleth breaks
+			//Defining what values recieve what color
+		function getColor(value) {
+                return value > 50000000 ? '#08519c':
+                       value > 25000000  ? '#3182bd':
+                       value > 10000000  ? '#6baed6':
+                       value > 5000000  ? '#bdd7e7':
+                                          '#eff3ff';
+            }
+			//Defining the feature and how it is represented and calling in the color defined above
+	  function style(feature){
+                return {
+                    fillColor: getColor(feature.properties.POP10),
+                    weight: 2,
+                    opacity: 1,
+                    color: 'gray',
+                    fillOpacity: 0.9
+                };
+            }
+		var provinces = new L.geoJson(provinces, {style:style}).addTo(map);
+		
+		// This section symbolizes covid circles
+        var minValue = 100;
+        var minRadius = 5;
+		 function calcRadius(val) {
+        return 0.9 * Math.pow(val/minValue, 0.5) * minRadius;
+          }
+		  
 		var basemaps = {
 			"Light Canvas": canvas,
 			"Satellite Imagery": imagery
 			};
 		var overlaymaps = {
-			"China Provinces ": provinces
+			"China Provinces": provinces
 			};
+			
+		//adds interface box to toggle the map layers displayed
 		L.control.layers(basemaps, overlaymaps, {collapsed:false}).addTo(map);
+		
+		//LEGEND
+		var legend = L.control({position: 'bottomleft'}); 
 
+			legend.onAdd = function (map) {
+
+		var div = L.DomUtil.create('div', 'legend'),
+			grades = [0, 5000000, 10000000, 25000000, 50000000]; // break values to define the intervals of population - YOU WILL NEED TO MODIFY IT TO GET THE RIGHT LEGEND BREAKS
+
+			div.innerHTML = '<b>Population 2019 <br><br></b>';
+			// The legend title, in this case it's Population 2019
+
+			// Loop through the classes or “grades” and generate a label with a colored square for each interval.
+          for (var i = 0; i < grades.length; i++) {
+            div.innerHTML += '<i style="background:' + getColor(grades[i] + 1) + '"></i>' + grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] +   '<br><br>' : '+');
+				}
+				return div;
+				};
+			legend.addTo(map)
+			
+			// Removing the legend when the layer is removed
+            map.on('overlayremove', function(eventLayer){
+              if (eventLayer.name == 'provinces'){ // We use the key/display name to refer to the layer
+                map.removeControl(legend); // legend is the variable name of the layer legend
+              }
+            });
+
+			// Adding the legend when the layer is added
+            map.on('overlayadd', function(eventLayer){
+              if (eventLayer.name == 'provinces'){
+                legend.addTo(map);
+              }
+            });
+
+		var onEachFeature = function(feature, layer) {
+			if (feature.properties) {
+			var prop = feature.properties;
+
+			// make an html popup with properties
+			//see how you can concatenate various attributes and text as needed, //including HTML markup, with single quotes. You pull out properties by //typing in prop and then putting the field in brackets.
+			//you can do this because prop = feature.properties._____
+
+		var popup = '<h3>'+prop['Location']+'</h3>'+'<br>Cases Day 1: '+prop['1']+'<br>Cases Day 16: '+prop['covid'];
+			// add known info about event to the description
+        
+			// you must create a layer property on each feature or else
+			// the search results won't know where the item is on the map / layer
+          feature.layer = layer;
+          layer.bindPopup(popup, {maxWidth: "auto"});
+        }
+      }; // end onEachFeature
+
+		//Styling the circles representing covidData
+		var covidData = new L.geoJson(covidData, {
+			onEachFeature : onEachFeature,
+			pointToLayer: function(feature, ll){
+				return L.circleMarker(ll, {
+					color: '#DF9C20',
+					opacity: 1,
+					weight: 2,
+					fillColor: '#FFA500',
+					fillOpacity: 0.5,
+					//radius: 10
+					radius: calcRadius(feature.properties.covid)   
+				});
+			} 
+		}).addTo(map);
+		
         </script>
    </body>
 </html>
-
