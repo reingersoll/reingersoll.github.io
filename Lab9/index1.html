@@ -1,1 +1,86 @@
+<html>
+  <head>
+    <title>Leaflet.timeline Example - Country Borders</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+<script src="https://skeate.dev/Leaflet.timeline/examples/leaflet.timeline.js"></script>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        width: 100vw;
+        height: 100%;
+      }
+      .leaflet-bottom.leaflet-left {
+        width: 100%;
+      }
+      .leaflet-control-container .leaflet-timeline-controls {
+        box-sizing: border-box;
+        width: 100%;
+        margin: 0;
+        margin-bottom: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script>
+          function getColorFor(value) {
+                return 	value >= 15 ? '#2166ac':
+						value >= 10? '#67a9cf':
+						value >= 5? '#d1e5f0':
+						value >= 0? '#f7f7f7':
+						value >= -5? '#fddbc7':
+						value >= -10? '#ef8a62':
+									'#b2182b';
+            }
+
+      var background = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}{r}.{ext}', {
+	attribution: '',
+	subdomains: 'abcd',
+	minZoom: 0,
+	maxZoom: 20,
+	ext: 'png'
+});
+      var map = L.map("map", {
+        layers: [background],
+        center: new L.LatLng(38, -95),
+        zoom: 5,
+      });
+      var timeline;
+      var timelineControl;
+
+      function onLoadData(data) {
+        timeline = L.timeline(data, {
+          style: function (data) {
+            return {
+              color: getColorFor(data.properties.DIFF),
+              fillOpacity: 0.9,
+            };
+          },
+          waitToUpdateMap: true,
+          onEachFeature: function (feature, layer) {
+            layer.bindTooltip('<h3>'+ feature.properties.NAME + '</h3> <p>' + ' <br>Biden: <strong>' + feature.properties.DEM + '</strong> <br>Trump: <strong>' + feature.properties.REP + '</strong></p>');
+          },
+        });
+
+        timelineControl = L.timelineSliderControl({
+          formatOutput: function (date) {
+            return new Date(date).toLocaleDateString();
+          },
+          enableKeyboardControls: true,
+        });
+        timeline.addTo(map);
+        timelineControl.addTo(map);
+        timelineControl.addTimelines(timeline);
+      }
+    </script>
+    <script src="https://electionmaps.github.io/statepolls5.jsonp"></script>
+  </body>
+</html>
 
