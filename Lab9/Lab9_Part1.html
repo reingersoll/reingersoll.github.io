@@ -34,19 +34,18 @@
                 return 	value >= 15 ? '#2166ac':
 						value >= 10? '#67a9cf':
 						value >= 5? '#d1e5f0':
-						value >= 0? '#f7f7f7':
+						value >= 0? '#ffffbf':
 						value >= -5? '#fddbc7':
 						value >= -10? '#ef8a62':
 									'#b2182b';
             }
 
-      var background = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}{r}.{ext}', {
-	attribution: '',
+ var background = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 	subdomains: 'abcd',
-	minZoom: 0,
-	maxZoom: 20,
-	ext: 'png'
+	maxZoom: 19
 });
+
       var map = L.map("map", {
         layers: [background],
         center: new L.LatLng(38, -95),
