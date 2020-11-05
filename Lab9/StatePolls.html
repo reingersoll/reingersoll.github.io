@@ -1,0 +1,124 @@
+<html>
+  <head>
+    <title>Leaflet.timeline</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://skeate.dev/Leaflet.timeline/examples/leaflet.timeline.js"></script>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #info {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 25vw;
+        padding: 1em;
+      }
+      #map {
+        position: fixed;
+        top: 0;
+        left: 25vw;
+        bottom: 0;
+        right: 0;
+      }
+      .leaflet-bottom.leaflet-left {
+        width: 100%;
+      }
+      .leaflet-control-container .leaflet-timeline-controls {
+        box-sizing: border-box;
+        width: 100%;
+        margin: 0;
+        margin-bottom: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="info">
+      <p>Latest poll from:</p>
+      <ul id="displayed-list"></ul>
+    </div>
+    <div id="map"></div>
+
+    <script>
+	 function getColorFor(value) {
+    return value >= 1 ? '#2166ac':
+    value >= 0  ? '#ffffbf':
+                  '#b2182b';
+                }
+
+    var minValue = 1;
+    var minRadius = 4;
+    function calcRadius(val) {
+      return 1.0083 * Math.pow(val/minValue,.5716)*minRadius;
+    }
+
+
+      var background = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}{r}.{ext}', {
+	attribution: '',
+	subdomains: 'abcd',
+	minZoom: 0,
+	maxZoom: 20,
+	ext: 'png'
+});
+
+      var map = L.map("map", {
+        layers: [background],
+        center: new L.LatLng(38, -95),
+        zoom: 4
+      });
+
+      // this is just used to show the polls in the sidebar
+      function updateList(timeline) {
+        var displayed = timeline.getLayers();
+        var list = document.getElementById("displayed-list");
+        list.innerHTML = "";
+        displayed.forEach(function (elec) {
+          var li = document.createElement("li");
+          li.innerHTML = elec.feature.properties.NAME + ' -  Biden: ' + elec.feature.properties.DEM + ', Trump: ' + elec.feature.properties.REP;
+          list.appendChild(li);
+        });
+      }
+
+      // this is similar to previous example --
+      function onLoadData(data) {
+        var getInterval = function (elec) {
+          return {
+            start: elec.properties.start,
+            end: elec.properties.end,
+          };
+        };
+        var timelineControl = L.timelineSliderControl({
+          formatOutput: function (date) {
+            return new Date(date).toString();
+          },
+        });
+        var timeline = L.timeline(data, {
+          getInterval: getInterval,
+          pointToLayer: function (data, latlng) {
+            var diff = (data.properties.DIFF);
+            return L.circleMarker(latlng, {
+              radius: calcRadius(data.properties.EV),
+              color: getColorFor(data.properties.DIFF),
+              fillColor: getColorFor(data.properties.DIFF),
+            }).bindPopup('<p>' + 'Electoral votes:' + data.properties.EV + '</p>');
+          },
+        });
+        timelineControl.addTo(map);
+        timelineControl.addTimelines(timeline);
+        timeline.addTo(map);
+        timeline.on("change", function (e) {
+          updateList(e.target);
+        });
+        updateList(timeline);
+      }
+
+
+    </script>
+    <script src="reingersoll.github.io/Lab9/Lab9_Part2.jsonp"></script>
+  </body>
+</html>
