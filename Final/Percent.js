@@ -1,4 +1,4 @@
-var percent{
+var percent ={
 "type": "FeatureCollection",
 "name": "Percent",
 "features": [
@@ -933,4 +933,4 @@ var percent{
 { "type": "Feature", "properties": { "SUMLEV": "50", "STATE": "31", "COUNTY_FIPS": "185", "STNAME": "Nebraska", "CTYNAME": "York County", "YEAR": "11", "Time": "1514764800", "AGEGRP": "0", "TOT_POP": "13748", "NHWA_MALE": "6141", "NHWA_FEMALE": "6302", "NHWA_TOT": "12443", "NHWA_PERCT": "90.50771021", "H_MALE": "353", "H_FEMALE": "384", "H_TOT": "737", "H_Perc": "5.36077975", "County_Boundaries_OBJECTID": 93, "County_Boundaries_Cnty_Name": "York", "County_Boundaries_Cnty_No": 93, "County_Boundaries_GlobalID": "{01FEECDB-9C99-4CA3-8FE0-CCE725C7198E}", "County_Boundaries_Shape__Are": 16042678956.925205, "County_Boundaries_Shape__Len": 506744.39236075425 }, "geometry": null },
 { "type": "Feature", "properties": { "SUMLEV": "50", "STATE": "31", "COUNTY_FIPS": "185", "STNAME": "Nebraska", "CTYNAME": "York County", "YEAR": "12", "Time": "1546300800", "AGEGRP": "0", "TOT_POP": "13679", "NHWA_MALE": "6124", "NHWA_FEMALE": "6271", "NHWA_TOT": "12395", "NHWA_PERCT": "90.61334893", "H_MALE": "334", "H_FEMALE": "384", "H_TOT": "718", "H_Perc": "5.248921705", "County_Boundaries_OBJECTID": 93, "County_Boundaries_Cnty_Name": "York", "County_Boundaries_Cnty_No": 93, "County_Boundaries_GlobalID": "{01FEECDB-9C99-4CA3-8FE0-CCE725C7198E}", "County_Boundaries_Shape__Are": 16042678956.925205, "County_Boundaries_Shape__Len": 506744.39236075425 }, "geometry": null }
 ]
-}
+};
