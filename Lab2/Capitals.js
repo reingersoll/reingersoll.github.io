@@ -1,4 +1,4 @@
-var capitols {
+var capital = {
 "type": "FeatureCollection",
 "name": "Capitals",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
