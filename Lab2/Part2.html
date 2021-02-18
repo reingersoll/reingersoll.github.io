@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<title> 
+		Lab 2  Part 2| D3 | Ingersoll
+		</title>
+		
+		<script src= "https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+		<script src = "https://reingersoll.github.io/Lab2/States.js"> </script>
+		<script src = "https://reingersoll.github.io/Lab2/Capitals.js"> </script>
+		
+		<style>
+		body {
+			position: absolute;
+			font-family: "Proxima Nova", "Montserrat", sans-serif;
+			}
+		h1 {
+			position : abusolute;
+			background: white;
+			left: 10px;
+			font-size: 1.3em;
+			font-weight: 100;
+			}
+		h2 {
+			top: 0px;
+			font-size: 1em;
+			}
+		.hover {
+			fill: yellow;
+			}
+		</style>
+		
+		
+	</head>
+	
+	<body>
+	<h1> US States - Population Density </h1>
+		<h2></h2>
+		<script>
+		//width and height of the visualization
+		var width = 1000;
+		var height = 600;
+
+		//creating a color spectrum for the age of homes
+		var lowColor = '#08589e'
+		var highColor = '#f0f9e8'
+		
+		//describing the low and high years for the color ramp
+		var minVal = 2166.521
+		var maxVal = 446144.331
+		
+		//creating the actual color ramp
+		var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor]);
+		//create the SVG
+		var svg = d3.select ("body")
+		.append ("svg")
+		.attr ("width", width)
+		.attr ("height", height);
+		
+		//Append empty placeholder "g" element tot he svg
+		// "g" will contain geometry elements assigned later
+		var g = svg.append("g");
+		
+		//Setting projection parameters
+		var albersProjection = d3.geoAlbers()
+			.scale (1200)
+			//.rotate ( [96.6327,0] )
+			//.center ( [0, 40.849793] )
+			.translate( [width/2,height/2] );
+			
+		//setting up geopath to project out projection
+		var geoPath = d3.geoPath()
+			.projection(albersProjection);
+			
+	
+		
+		//drawing the state boarders
+		g.selectAll ( "path" )
+			.data (states.features)
+			.enter()
+			.append ("path")
+			.attr ("fill", function(d) {return ramp (d.properties.Density)})
+			.attr ("stroke", "#333") //draws the boarders
+			.attr ("class", "pop")
+			.attr ("d", geoPath)
+			.on ("mouseover", function(d) 
+			{
+				//populate h2 (initalized above) with population of the state
+				// meant to also have it state the name of the state capital, but would have needed to join the layers
+				d3.select ("h2").text(d.properties.NAME  + " Population:" + d.properties.POP);
+					d3.select(this).attr("class","pop hover");
+					})
+				//D3 to replace text interactively based on building data
+					.on("mouseout", function(d)
+					{
+						d3.select("h2").text("");
+						d3.select(this).attr("class","pop");
+						});
+			
+		
+		//drawing state capitals
+		var capital = svg.append("g");
+		
+		capital.selectAll ("circle")
+			.data(capital)
+			.enter()
+			.append("circle")
+			.attr("r", "6px")
+			.attr("fill", "#ff1100")
+			.attr("cx", function(d) {
+				return projection([d.prperties.coordinates])[0];
+				})
+			.attr("cy", function(d) {
+				return projection([d.prperties.coordinates])[1];
+				})
+  
+		
+		</script>
+	</body>
+</html>
+		
