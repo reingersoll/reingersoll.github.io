@@ -1,4 +1,4 @@
-var = states {
+var states = {
 "type": "FeatureCollection",
 "name": "States3",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::4269" } },
