@@ -36,20 +36,21 @@
 	<h1> US States - Population Density </h1>
 		<h2></h2>
 		<script>
-		//width and height of the visualization
+		//width and height of the window
 		var width = 1000;
 		var height = 600;
 
-		//creating a color spectrum for the age of homes
+		//creating a color spectrum for the value of population density
 		var lowColor = '#08589e'
 		var highColor = '#f0f9e8'
 		
-		//describing the low and high years for the color ramp
+		//describing the low and high values for the color ramp
 		var minVal = 2166.521
 		var maxVal = 446144.331
 		
 		//creating the actual color ramp
 		var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor]);
+		
 		//create the SVG
 		var svg = d3.select ("body")
 		.append ("svg")
@@ -63,11 +64,11 @@
 		//Setting projection parameters
 		var albersProjection = d3.geoAlbers()
 			.scale (1200)
-			//.rotate ( [96.6327,0] )
+			//.rotate ( [96.6327,0] ) 
 			//.center ( [0, 40.849793] )
 			.translate( [width/2,height/2] );
 			
-		//setting up geopath to project out projection
+		//setting up geopath to project our projection
 		var geoPath = d3.geoPath()
 			.projection(albersProjection);
 			
@@ -85,11 +86,11 @@
 			.on ("mouseover", function(d) 
 			{
 				//populate h2 (initalized above) with population of the state
-				// meant to also have it state the name of the state capital, but would have needed to join the layers
-				d3.select ("h2").text(d.properties.NAME  + " Population:" + d.properties.POP);
+				// meant to also have it display the name of the state capital, but would have needed to join the layers
+				d3.select ("h2").text(d.properties.NAME  + " Population Density:" + d.properties.Density);
 					d3.select(this).attr("class","pop hover");
 					})
-				//D3 to replace text interactively based on building data
+				//D3 to replace text interactively as you mouse over different states
 					.on("mouseout", function(d)
 					{
 						d3.select("h2").text("");
@@ -97,7 +98,10 @@
 						});
 			
 		
-		//drawing state capitals
+		//drawing state capitals (layer 2)
+		//the examples given in the assignment were of lines and polygons
+		//looked online for how to do points, but could not get it to work
+		//this code below gives no errors, other examples I tired gave an error for ".enter()"
 		var capital = svg.append("g");
 		
 		capital.selectAll ("circle")
