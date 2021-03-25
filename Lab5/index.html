@@ -1,0 +1,98 @@
+<html>
+	<head>
+		<link rel = "stylesheet"
+			href = "https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/css/ol.css"
+			type = "text/css">
+	</head>
+	
+	<body>
+	
+		<div id = "map" 
+			style = "width: 800px; height: 600px;">
+		</div>
+		
+		<div id="popup" class="ol-popup">
+			<a href="#" id="popup-closer" class="ol-popup-closer"></a>
+			<div id="popup-content"></div>
+		</div>
+
+		
+		<script 
+			src = "https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js">
+		</script>
+		
+		<script>
+			var attribution = new ol.control.Attribution({
+				collapsible: false
+				});
+			//Loading in our base (street) map
+			var map = new ol.Map ({
+				controls: ol.control.defaults ({attribution: false}).extend([attribution]),
+				layers: [
+					new ol.layer.Tile ({
+						source: new ol.source.OSM({
+							url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+							attributions: [ ol.source.OSM.ATTRIBUTION, 'Ingersoll' ],
+							maxZoom: 19
+							})
+						})
+					],
+				target: 'map',
+				//Setting the center of where it opens to, in this case - Lincoln, NE
+				view: new ol.View ({
+					center: ol.proj.fromLonLat ([-96.7056, 40.8200]),
+					maxZoom: 18,
+					zoom: 14
+					})
+				});
+			// adding a point layer to the map at the defined coordinates 
+			// default is blue boarder
+			var layer = new ol.layer.Vector ({
+				source : new ol.source.Vector ({
+					features: [
+						new ol.Feature ({
+							geometry: new ol.geom.Point (ol.proj.fromLonLat ([-96.7056, 40.8207]))
+							})
+						]
+					})
+				});
+			map.addLayer(layer);
+			
+			//defining the popup menu
+			var container = document.getElementById ('popup');
+			var content = document.getElementById ('popup-content');
+			var closer = document.getElementById ('popup-closer');
+			
+			var overlay = new ol.Overlay ({
+				element: container,
+				autoPan: true,
+				autoPanAnimation: {
+					duration: 250
+					}
+				});
+			map.addOverlay(overlay);
+			
+			closer.onclick = function() {
+				overlay.setPosition(undefined);
+				closer.blur();
+				return false;
+			};
+			
+			map.on('singleclick', function (event) {
+				if (map.hasFeatureAtPixel(event.pixel) ===true) {
+					var coordinate = event.coordinate;
+					content.innerHTML = '<b>This is Memorial Stadium!</b><br />Home of the Huskers!.';
+						overlay.setPosition(coordinate);
+				}
+				else {
+					overlay.setPosition(undefined);
+					closer.blur();
+					}
+			});
+			
+			content.innerHTML = '<b>This is Memorial Stadium!</b><br/>Home of the Huskers!.';
+			overlay.setPosition(ol.proj.fromLonLat ([-96.7056, 40.8207]));
+		</script>
+	</body>
+	
+</html>
