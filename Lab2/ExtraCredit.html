@@ -14,24 +14,25 @@
 			font-family: "Proxima Nova", "Montserrat", sans-serif;
 			}
 		h1, h2 {
-			position : abusolute;
+			position : absolute;
 			background: white;
 			left: 10px;
 			font-size: 1.3em;
 			font-weight: 100;
 			}
 		h2 {
-			top: 0px;
+			top: 30px;
 			font-size: 1em;
 			}
 		.hover {
 			fill: yellow;
 			}
-		#sliderContainer {
-			text-align: center;
-			position: right;
-			top: 700px;
-			}
+        #sliderContainer {
+            text-align: center;
+            position: right;
+            top: 700px;
+        }
+
 		</style>
 		
 	</head>
@@ -44,7 +45,9 @@
 	<div id = "sliderContainer">
 		<input id = "timeslide" type = "range" min = "0" max = "129" value = "0" step = "1"/> <br>
 			<span id = "range"> 1890 </span>
-			
+	
+
+		
 		<script>
 		//defining the years for the slider
 			var year =
@@ -56,15 +59,15 @@
 			var height = 600;
 			
 		//creating a color spectrum for the age of homes
-		var lowColor = '#bc2a66'
-		var highColor = '#f9f9f9'
+			var lowColor = '#bc2a66'
+			var highColor = '#f9f9f9'
 		
 		//describing the low and high years for the color ramp
-		var minVal = 1900
-		var maxVal = 2020
+			var minVal = 1900
+			var maxVal = 2020
 		
 		//creating the actual color ramp
-		var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor]);
+			var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor]);
 
 		
 		//creating the SVG (scalable vector graphic)
@@ -121,29 +124,29 @@
 						d3.select(this).attr("class","buildingdata");
 						});
 				
-			//defing the parameters of the slider
-				d3.select("#timeslide").on("input", function() {
-					update(+this.value);
-					});
+		//defing the parameters of the slider
+			d3.select("#timeslide").on("input", function() {
+				update(+this.value);
+				});
 					
-					function update(value) {
-						document.getElementById("range").innerHTML=year[value];
-						inputValue = year[value];
-						d3.selectAll(".buildingdata")
-							.attr("fill", dateMatch);
-						}
-					function dateMatch (date,value) {
-						var yy = date.properties.RESYRBLT;
-						var y = yy.toString();
-						if (inputValue == y) {
-							this.parentElement.appendChild(this);
-							return "yellow";
-							}
-							else {
-								return "#999";
-							};
+				function update(value) {
+					document.getElementById("range").innerHTML=year[value];
+					inputValue = year[value];
+					d3.selectAll(".buildingdata")
+						.attr("fill", dateMatch);
 					}
-	
+				function dateMatch (date,value) {
+					var yy = date.properties.RESYRBLT;
+					var y = yy.toString();
+					if (inputValue == y) {
+						this.parentElement.appendChild(this);
+						return "yellow";
+						}
+						else {
+							return "#999";
+						};
+				}
+
 		</script>
 		
 	</body>
