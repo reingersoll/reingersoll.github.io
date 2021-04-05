@@ -1,0 +1,154 @@
+<html>
+	<head>
+		<title> 
+		Lab 2 | D3 | Ingersoll
+		</title>
+		
+		<script src= "https://d3js.org/d3.v5.min.js" charset="utf-8"></script>
+		<script src = "https://rshepard2.github.io/Lab9/data/lnkrds.js"> </script>
+		<script src = "https://rshepard2.github.io/Lab9/data/northeast_lnk_blds.js"> </script>
+		
+		<style>
+		body {
+			position: absolute;
+			font-family: "Proxima Nova", "Montserrat", sans-serif;
+			}
+		h1, h2 {
+			position : absolute;
+			background: white;
+			left: 10px;
+			font-size: 1.3em;
+			font-weight: 100;
+			}
+		h2 {
+			top: 30px;
+			font-size: 1em;
+			}
+		.hover {
+			fill: yellow;
+			}
+        #sliderContainer {
+            text-align: center;
+            position: right;
+            top: 700px;
+        }
+
+		</style>
+		
+	</head>
+	
+	<body>
+	
+	<h1>Aging Northeast Lincoln Homes </h1>
+		<h2></h2>
+	
+	<div id = "sliderContainer">
+		<input id = "timeslide" type = "range" min = "0" max = "15" value = "0" step = "1"/> <br>
+			<span id = "range"> 1945 </span>
+	
+
+		
+		<script>
+		//defining the years for the slider
+			var year =
+				["1945","1946","1947","1948","1949","1950","1951","1952","1953","1954","1955","1956","1957","1958","1959","1960"];
+			var inputValue = null;
+			
+		//defining the width and height of the window
+			var width = 1000;
+			var height = 600;
+			
+		//creating a color spectrum for the age of homes
+			var lowColor = '#bc2a66'
+			var highColor = '#f9f9f9'
+		
+		//describing the low and high years for the color ramp
+			var minVal = 1900
+			var maxVal = 2020
+		
+		//creating the actual color ramp
+			var ramp = d3.scaleLinear().domain([minVal,maxVal]).range([lowColor,highColor]);
+
+		
+		//creating the SVG (scalable vector graphic)
+			var svg = d3.select( "body" )
+				.append( "svg" )
+				.attr( "width", width )
+				.attr( "height", height );
+
+		//append a placeholder ('g') element to the SVG
+		//'g' will contain geometry elements
+			var g = svg.append( "g" );
+		 
+		 //setting up the map projection parameters
+			var albersProjection = d3.geoAlbers()
+				.scale( 2850000 ) 
+				.rotate( [96.6327,0] ) 
+				.center( [0, 40.8497493] ) 
+				.translate( [width/2,height/2] );
+		
+		//bringin in a function for D3 to project the map (turn lat/long into screen coordinates)
+			var geoPath = d3.geoPath()
+				.projection( albersProjection );
+				
+		//bind data to geometry; append attributes to geo paths
+		//roads 
+			g.selectAll( "path" )
+				.data( lnkrds.features )
+				.enter()
+				.append( "path" )
+				.attr( "fill", "#ccc" )
+				.attr( "stroke", "#333")
+				.attr( "d", geoPath );
+		//buildings
+			var lnk_json = svg.append ("g");
+			
+			lnk_json.selectAll ("path")
+				.data (lnkbldngsjson.features)
+				.enter ()
+				.append ("path")
+				.attr ("fill", function(d) {return ramp (d.properties.RESYRBLT)})
+				.attr ("stroke", "#999")
+				.attr ("d", geoPath)
+				.attr ("class", "buildingdata")
+				.on ("mouseover", function(d) 
+				{
+				//populate h2 (initalized above) with "built in" & the year build field from json
+				d3.select ("h2").text("Built in " + d.properties.RESYRBLT);
+					d3.select(this).attr("class","buildingdata hover");
+					})
+				//D3 to replace text interactively based on building data
+					.on("mouseout", function(d)
+					{
+						d3.select("h2").text("");
+						d3.select(this).attr("class","buildingdata");
+						});
+				
+		//defing the parameters of the slider
+			d3.select("#timeslide").on("input", function() {
+				update(+this.value);
+				});
+					
+				function update(value) {
+					document.getElementById("range").innerHTML=year[value];
+					inputValue = year[value];
+					d3.selectAll(".buildingdata")
+						.attr("fill", dateMatch);
+					}
+				function dateMatch (date,value) {
+					var yy = date.properties.RESYRBLT;
+					var y = yy.toString();
+					if (inputValue == y) {
+						this.parentElement.appendChild(this);
+						return "yellow";
+						}
+						else {
+							return "#999";
+						};
+				}
+
+		</script>
+		
+	</body>
+</html>
+		
