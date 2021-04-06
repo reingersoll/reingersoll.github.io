@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<hmtl>
+	<head>
+		<meta charset = "utf-8" />
+		<meta name="viewport"
+			content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+
+			
+		<title> Lab 7 | Ingersoll </title>
+		
+		<link rel = "stylesheet"
+			href = "https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+			
+		<script src = "https://js.arcgis.com/4.18/"> 
+		</script>
+	
+		<style>
+			html,
+			body,
+			#viewDiv {
+				padding: 0;
+				margin: 0;
+				height: 100%;
+				width: 100%;
+			}
+			
+			#timeSlider {
+				position: absolute;
+				left: 5%;
+				right: 5%;
+				bottom: 20px;
+			}
+			
+		</style>
+		
+		<script>
+			require ([
+				"esri/Map",
+				"esri/views/MapView",
+				"esri/layers/FeatureLayer",
+				"esri/widgets/TimeSlider",
+				"esri/widgets/Legend" ],
+				function (Map, MapView, FeatureLayer, TimeSlider, Legend) {
+				
+					const popupTemplate = {
+						title: "Location: {place}",
+						content: [
+							{
+							type: "fields",
+							fieldInfos: [
+								{
+								fieldName: "eventTime",
+								label: "Event Time",
+								format: 
+									{
+									places:0,
+									digitSeparator: true
+									}
+								},
+								{
+								fieldName: "mag",
+								label: "Magnitude",
+								format:
+									{
+									places:0,
+									digitSeparator: true
+									}
+								},
+								{
+								fieldName: "depth",
+								label: "Depth",
+								format:
+									{
+									places:0,
+									digitSeparator: true
+									}
+								}
+							]
+							}
+						]
+					};
+					
+					const layer = new FeatureLayer ({
+						url: "https://services9.arcgis.com/RHVPKKiFTONKtxq3/ArcGIS/rest/services/USGS_Seismic_Data_v1/FeatureServer/0",
+						outFields: ["place", "mag", "depth"],
+						popupTemplate: popupTemplate
+						});
+					
+					const map = new Map ({
+						basemap: "dark-gray", //esri supported base maps
+						layers: [layer] //if you add more layers separate by a comma
+						});
+					
+					const view = new MapView ({
+						map:map,
+						container: "viewDiv",
+						zoom: 2, //zoomed out to see the globe
+						center: [-150, 0] //long, lat
+						});
+						
+					const timeSlider = new TimeSlider ({
+						container: "timeSlider",
+						view: view,
+						timeVisible: true,
+						loop:true
+						});
+					
+					view.whenLayerView(layer).then(function (lv) {
+						// this just rounds up the time extent to full hours
+						timeSlider.fullTimeExtent = layer.timeInfo.fullTimeExtent.expandTo("hours");
+						});
+					
+					const legend = new Legend ({
+						view: view
+						});
+						
+					view.ui.add(legend, "top-left");
+						
+				});
+				
+		</script>
+	</head>
+	
+	<body>
+		<div id = "viewDiv"> </div>
+		<div id = "timeSlider"> </div>
+		
+	</body>
+	
+</html>
+						
