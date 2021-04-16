@@ -1,4 +1,4 @@
-{
+var building = {
 "type": "FeatureCollection",
 "name": "Lab7_BrintonData",
 "features": [
@@ -1287,4 +1287,4 @@
 { "type": "Feature", "properties": { "name": "Opera House", "latitude": "41.178903", "longitude": "-92.251849", "time": "12\/17\/1908" }, "geometry": null },
 { "type": "Feature", "properties": { "name": "Opera House", "latitude": "41.198372", "longitude": "-92.093089", "time": "12\/18\/1908" }, "geometry": null }
 ]
-}
+};
