@@ -1,7 +1,7 @@
 L.AnimatedMarker = L.Marker.extend({
   options: {
     // meters
-    distance: 200,
+    distance: 500,
     // ms
     interval: 1000,
     // animate on add?
