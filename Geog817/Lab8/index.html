@@ -1,0 +1,55 @@
+<html>
+<head>
+  <title>Ingersoll | Lab 8 | Marker Animation</title>
+	<meta charset="utf-8">
+	
+	<link rel="stylesheet" href="https://d19vzq90twjlae.cloudfront.net/leaflet/v0.7.7/leaflet.css" />
+	<script src="https://d19vzq90twjlae.cloudfront.net/leaflet/v0.7.7/leaflet.js"></script>
+
+	<script src="https://reingersoll.github.io/Geog817/Lab8/animatedlayer.js"></script>
+	
+
+	<style type="text/css">
+	 	html, body, #map{
+	 		height: 100%;
+	 		padding: 0;
+	 		margin: 0;
+	 	}
+	</style>
+
+</head>
+<body>
+
+	<div id="map"></map>
+
+	<script type="text/javascript">
+
+	var map = L.map('map').setView([40.80882667264497, -96.6659950311563], 14);
+		//sets the center image and zoom
+
+	var OpenStreetMap_HOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+			maxZoom: 19,
+			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
+	}).addTo(map);  //changed the base map
+	
+	//creating the path
+	//places a vertex at the coordinate specified
+	//connects a line from points specified to travel along
+	//speed at which travelled is based on distance between points, further = faster
+	var line = L.polyline([[40.820828745743206, -96.70370108117213],[40.820857451184544, -96.7012279040734],[40.82082874575554, -96.6987774863245],[40.82077707593248, -96.69383113216433],[40.82092060312678, -96.69273109940569], [40.82101820145075, -96.69160830738372],[40.82077133484941, -96.69003791580192],[40.820771334850605, -96.68791371464395],[40.82077133485104, -96.68706403417472],[40.82065077175729, -96.68241355089049],[40.8024734167546, -96.68245552807484], [40.80214608328218, -96.68046029628226], [40.801267443389655, -96.67876852177935],[40.80013036274863, -96.67768366189156],[40.7975632453967, -96.67276006702751],[40.7967304902203, -96.67096208251078],[40.79168204754674, -96.66503707851635],[40.79118235143147, -96.66440740462708],[40.78862637582108, -96.65532644463138],[40.78815537632294, -96.6527015389083],[40.788184095888084, -96.64683722639477], [40.78803475395163, -96.64280883061117],[40.78792561924069, -96.63490376770729],[40.78755800627973, -96.6332878575358], [40.786208159995056, -96.63145194082199],[40.78550163375954, -96.63229403485664], [40.784864030475774, -96.63251404140966], [40.784289607836484, -96.63239265849282],[40.783002883153436, -96.63110296491371]]);
+	map.addLayer(line);
+	
+	//added markers to help tell a story
+	L.marker([40.820828745743206, -96.70370108117213]).addTo(map)
+		.bindPopup("<b>End of year party!</b><br />Meet at Memorial Stadium at 4:30pm.").openPopup();
+		
+	L.marker([40.783002883153436, -96.63110296491371]).addTo(map)
+		.bindPopup("<b>Final Destination:</b><br />Holmes Lake for food and games.");
+
+    var animatedMarker = L.animatedMarker(line.getLatLngs())
+	map.addLayer(animatedMarker);
+
+	</script>
+
+</body>
+</html>
