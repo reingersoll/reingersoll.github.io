@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>March 2019 Flooding</title>
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.4/dist/leaflet.css"
+        crossorigin=""/>
+
+        <script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"
+        crossorigin=""></script>
+		
+		<script src = "https://reingersoll.github.io/Geog817/Project/counties.js"></script>
+		<script src = "https://reingersoll.github.io/Geog817/Project/evacuated.js"> </script>
+		
+		<style type="text/css">
+			html, body { margin: 0; padding: 0; height: 100%; }
+			#map { min-height: 100%; }
+			.legend {
+              padding: 6px 8px;
+              line-height: 18px;
+              background: rgba(255,255,255,0.9);
+              box-shadow: 0 0 15px rgba(0,0,0,1);
+              border-radius: 5px;
+          }
+		  .legend i {
+              width: 18px;
+              height: 18px;
+              float: left;
+              margin-right: 8px;
+              opacity: 1;
+          }
+</style>
+
+
+    </head>
+
+    <body>
+        <div id="map"></div>
+
+        <script type="text/javascript">
+
+          var map = L.map('map', {
+              center: [41.4925, -99.9018],
+              zoom: 8
+          });
+
+         L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
+			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+			subdomains: 'abcd',
+			minZoom: 0,
+			maxZoom: 20,
+			ext: 'png'
+		}).addTo(map);
+
+		//Terrain Base Map
+		var Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+			attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+		});
+		//Black and White Base Map
+		var canvas = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
+			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+			subdomains: 'abcd',
+			minZoom: 0,
+			maxZoom: 20,
+			ext: 'png'
+		}).addTo(map);
+		
+		function getColor(value) {
+                return value >  4.0 ? '#08519c':
+                       value >  3.0 ? '#3182bd':
+                       value >  2.0 ? '#6baed6':
+                       value >  1.0 ? '#bdd7e7':
+                                         '#eff3ff';
+            }
+		
+		function style(feature){
+                return {
+                    fillColor: getColor(feature.properties.Precip),
+                    weight: 2,
+                    opacity: 1,
+                    color: 'gray',
+                    fillOpacity: 0.9
+                };
+            }
+		
+		var featureInfo = function(feature, layer) {
+			if (feature.properties) {
+			var prop = feature.properties;
+
+			// make an html popup with properties
+			//see how you can concatenate various attributes and text as needed, 
+			//including HTML markup, with single quotes. You pull out properties by 
+			//typing in prop and then putting the field in brackets.
+			//you can do this because prop = feature.properties._____
+
+		var popup = '<h3>'+prop['NAME10']+'</h3>'+'<br>Precipitation: '+prop['Precip'];
+			// add known info about event to the description
+        
+			// you must create a layer property on each feature or else
+			// the search results won't know where the item is on the map / layer
+          feature.layer = layer;
+          layer.bindPopup(popup, {maxWidth: "auto"});
+        }
+      };
+
+		var counties = L.geoJson(counties, {style:style}, {featureInfo:featureInfo}).addTo(map);
+		
+		var minValue = 500;
+		var minRadius = 5;
+
+		//the radius value is arbitrary, to produce good symbol sizes. if you're getting very large or small symbols, you can modify the math used here to determine scaling
+
+		function calcRadius(val) {
+			return 0.9 * Math.pow(val/minValue, .7) * minRadius;
+			}      
+
+//LEGEND
+		var legend = L.control({position: 'bottomleft'}); 
+
+			legend.onAdd = function (map) {
+
+		var div = L.DomUtil.create('div', 'legend'),
+			grades = [0, 1.0, 2.0, 3.0, 4.0]; // break values to define the intervals of population - YOU WILL NEED TO MODIFY IT TO GET THE RIGHT LEGEND BREAKS
+
+			div.innerHTML = '<b>Rainfall (ins) <br><br></b>';
+			// The legend title, in this case it's Population 2019
+
+			// Loop through the classes or “grades” and generate a label with a colored square for each interval.
+          for (var i = 0; i < grades.length; i++) {
+            div.innerHTML += '<i style="background:' + getColor(grades[i] + 1) + '"></i>' + grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] +   '<br><br>' : '+');
+				}
+				return div;
+				};
+			legend.addTo(map)
+			
+			// Removing the legend when the layer is removed
+            map.on('overlayremove', function(eventLayer){
+              if (eventLayer.name == 'counties'){ // We use the key/display name to refer to the layer
+                map.removeControl(legend); // legend is the variable name of the layer legend
+              }
+            });
+
+			// Adding the legend when the layer is added
+            map.on('overlayadd', function(eventLayer){
+              if (eventLayer.name == 'counties'){
+                legend.addTo(map);
+              }
+            });
+			
+			//POP UP
+			var onEachFeature = function(feature, layer) {
+			if (feature.properties) {
+			var prop = feature.properties;
+
+			// make an html popup with properties
+			//see how you can concatenate various attributes and text as needed, 
+			//including HTML markup, with single quotes. You pull out properties by 
+			//typing in prop and then putting the field in brackets.
+			//you can do this because prop = feature.properties._____
+
+		var popup = '<h3>'+prop['NAME']+'</h3>'+'<br>Population: '+prop['Pop']+'<br>Evacuated: '+prop['Evacuation'];
+			// add known info about event to the description
+        
+			// you must create a layer property on each feature or else
+			// the search results won't know where the item is on the map / layer
+          feature.layer = layer;
+          layer.bindPopup(popup, {maxWidth: "auto"});
+        }
+      }; // end onEachFeature
+
+		
+		var evacuated = new L.geoJson(evacuated, {
+			onEachFeature: onEachFeature,
+			pointToLayer: function(feature, ll){
+        return L.circleMarker(ll, {
+                color: '#fa9905',
+                opacity: 1,
+                weight: 2,
+                fillColor: '#ffb037',
+                fillOpacity: .5,
+                //radius: 10
+                radius: calcRadius(feature.properties.Pop)   
+            });
+        } 
+}).addTo(map);
+
+		
+		var basemaps = {
+			"Light Canvas": canvas,
+			"Satellite Imagery": Esri_WorldTopoMap
+			};
+		var overlaymaps = {
+			"Precipitation": counties,
+			"Cities": evacuated
+			};
+		L.control.layers(basemaps, overlaymaps, {collapsed:false}).addTo(map);
+        </script>
+   </body>
+</html>
