@@ -38,7 +38,7 @@
         <div id="map"></div>
 
         <script type="text/javascript">
-
+	//creating the map varible and setting the center and zoom
           var map = L.map('map', {
               center: [41.4925, -99.9018],
               zoom: 8
@@ -111,7 +111,7 @@
 		div.innerHTML = '<b>Rainfall (ins) </b><br> <h5>March 13-14</h5>';
 			
 
-		// Loop through the classes or “grades” and generate a label with a colored square for each interval.
+		// Loop through the classes or “grades” and generate a label with a colored square for each interval
          for (var i = 0; i < grades.length; i++) {
             div.innerHTML += '<i style="background:' + getColor(grades[i] + 1) + '"></i>' + grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] +   '<br><br>' : '+');
 				}
@@ -161,6 +161,7 @@
 			} 
 		}).addTo(map);
 
+		//defining the top-right interactive tools to turn on and off layers
 		
 		var basemaps = {
 			"Light Canvas": canvas,
@@ -170,6 +171,7 @@
 			"Precipitation": counties,
 			"Cities": evacuated
 			};
+		//drawing all the layers
 		L.control.layers(basemaps, overlaymaps, {collapsed:false}).addTo(map);
         </script>
    </body>
