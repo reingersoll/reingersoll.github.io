@@ -44,10 +44,9 @@
               zoom: 8
           });
 
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    	L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
 			attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-			maxZoom: 16
-		});.addTo(map);
+		}).addTo(map);
 
 		//Terrain Base Map
 		var Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
@@ -56,7 +55,7 @@
 		//Black and White Base Map
 		var Esri_WorldGrayCanvas = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
 			attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-		});.addTo(map);
+		}).addTo(map);
 		
 		//Setting up choropleth map values
 		function getColor(value) {
